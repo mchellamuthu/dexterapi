@@ -1,7 +1,9 @@
 <?php
-
 use Illuminate\Http\Request;
-
+use App\Http\Resources\InstituteResource;
+use App\Http\Resources\InstitutesCollection;
+use App\Institute;
+use App\MyInstitute;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,5 +16,24 @@ use Illuminate\Http\Request;
 */
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+    return auth()->user();
 });
+
+Route::group(['middleware'=>'auth:api'], function()
+{
+  Route::get('/institutes', function(Request $request)
+  {
+      return new InstitutesCollection(Institute::all());
+  });
+
+  Route::get('/institute/{id}', function($id)
+  {
+      return new InstituteResource(Institute::find($id));
+  });
+
+
+
+});
+
+// Route::post('signup','SignupController@register');
+// Route::post('login','LoginController@login');

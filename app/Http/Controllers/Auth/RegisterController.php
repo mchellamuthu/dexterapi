@@ -48,7 +48,10 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
+            'role'=>'required|string|in:Teacher,Parent,Leader,Student',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ]);
@@ -63,9 +66,25 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
+            'first_name' => $data['first_name'],
+            'last_name' => $data['last_name'],
+            'title' => $data['title'],
+            'role'=>$data['role'],
+            'activation_token'=>str_random(36),
+            'api_token'=>str_random(36),
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
     }
+
+    // public function register(Request $request)
+    // {
+    //     $this->validator($request->all())->validate();
+    //     event(new Registered($user = $this->create($request->all())));
+    //     $this->guard()->login($user);
+    //     return $this->registered($request, $user)  ?: response()->json(['success'=>'Registered']);
+    //
+    // }
+
+
 }

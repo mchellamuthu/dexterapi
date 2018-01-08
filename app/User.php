@@ -8,6 +8,24 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     use Notifiable;
+    use Uuids;
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
+     * Get the user's full name.
+     *
+     * @return string
+     */
+    public function getFullNameAttribute()
+    {
+        return "{$this->title} {$this->first_name} {$this->last_name}";
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -15,7 +33,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'title','avatar','first_name','last_name', 'email', 'password','username','role','api_token','activation_token','activated_at'
     ];
 
     /**
@@ -24,6 +42,17 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token','activation_token'
     ];
+
+    //
+    // public function institutes(){
+    //   return  $this->hasMany(Insti::class,'user_id','id');
+    // }
+
+    public function institutes()
+    {
+        return $this->belongsToMany(Institute::class,'my_institutes')->withPivot(['id','approved'])->withTimestamps();
+    }
+
 }
