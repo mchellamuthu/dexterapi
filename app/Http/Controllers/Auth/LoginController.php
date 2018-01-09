@@ -59,6 +59,16 @@ class LoginController extends Controller
         // $url = "http://" . $subdomain . "." . $host;
         // return $this->redirect($url);
 
-        return $user;
+        // return $user;
+        if ($request->ajax()) {
+            return response()->json([
+                'auth' => auth()->check(),
+                'user' => $user,
+                'intended' => $this->redirectPath(),
+            ]);
+
+        }
     }
+
+    
 }

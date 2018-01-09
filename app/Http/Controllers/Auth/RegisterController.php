@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
@@ -19,7 +20,7 @@ class RegisterController extends Controller
     | validation and creation. By default this controller uses a trait to
     | provide this functionality without requiring any additional code.
     |
-    */
+     */
 
     use RegistersUsers;
 
@@ -52,7 +53,7 @@ class RegisterController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'title' => 'required|string|max:255',
-            'role'=>'required|string|in:Teacher,Parent,Leader,Student',
+            'role' => 'required|string|in:Teacher,Parent,Leader,Student',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ]);
@@ -70,25 +71,20 @@ class RegisterController extends Controller
             'first_name' => $data['first_name'],
             'last_name' => $data['last_name'],
             'title' => $data['title'],
-            'role'=>$data['role'],
-            'activation_token'=>str_random(36),
-            'api_token'=>str_random(36),
+            'role' => $data['role'],
+            'activation_token' => str_random(36),
+            'api_token' => str_random(36),
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
     }
+    public function register(Request $request)
+    {
+        $this->validator($request->all())->validate();
+        event(new Registered($user = $this->create($request->all())));
+        $this->guard()->login($user);
+        return $this->registered($request, $user) ? : response()->json(['success' => 'Registered', 'data' => $user]);
 
-        /**
-         * The user has been registered.
-         *
-         * @param  \Illuminate\Http\Request  $request
-         * @param  mixed  $user
-         * @return mixed
-         */
-        protected function registered(Request $request, $user)
-        {
-            return $user;
-        }
-
+    }
 
 }
