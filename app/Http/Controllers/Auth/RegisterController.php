@@ -6,6 +6,7 @@ use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -77,14 +78,17 @@ class RegisterController extends Controller
         ]);
     }
 
-    // public function register(Request $request)
-    // {
-    //     $this->validator($request->all())->validate();
-    //     event(new Registered($user = $this->create($request->all())));
-    //     $this->guard()->login($user);
-    //     return $this->registered($request, $user)  ?: response()->json(['success'=>'Registered']);
-    //
-    // }
+        /**
+         * The user has been registered.
+         *
+         * @param  \Illuminate\Http\Request  $request
+         * @param  mixed  $user
+         * @return mixed
+         */
+        protected function registered(Request $request, $user)
+        {
+            return $user;
+        }
 
 
 }
